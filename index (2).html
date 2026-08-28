@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>末日生存协议</title>
+
+  <style>
+    :root {
+      --red: #d71938;
+      --red-light: #ff405c;
+      --dark-red: #681522;
+      --black: #070708;
+      --card: rgba(21, 21, 23, .86);
+      --line: rgba(255, 255, 255, .12);
+      --text: #f5f2ed;
+      --muted: #9d9a9a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 80% 10%, rgba(150, 0, 20, .22), transparent 34%),
+        radial-gradient(circle at 15% 85%, rgba(70, 0, 10, .3), transparent 32%),
+        linear-gradient(135deg, #090909 0%, #12090b 48%, #050505 100%);
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .06;
+      background-image:
+        linear-gradient(rgba(255,255,255,.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.2) 1px, transparent 1px);
+      background-size: 4px 4px;
+      mix-blend-mode: overlay;
+      z-index: 10;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse, transparent 50%, rgba(0,0,0,.7) 100%);
+      z-index: 9;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 40px));
+      min-height: 100vh;
+      margin: auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    header {
+      height: 92px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      letter-spacing: .18em;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--red);
+      display: grid;
+      place-items: center;
+      transform: rotate(45deg);
+      box-shadow: 0 0 18px rgba(215, 25, 56, .35);
+    }
+
+    .brand-mark span {
+      color: var(--red-light);
+      transform: rotate(-45deg);
+      font-size: 16px;
+    }
+
+    .status {
+      color: var(--red-light);
+      font-size: 11px;
+      letter-spacing: .14em;
+    }
+
+    .screen {
+      display: none;
+      min-height: calc(100vh - 92px);
+      align-items: center;
+      justify-content: center;
+      padding: 70px 0;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .hero {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      color: var(--red-light);
+      font-size: 12px;
+      letter-spacing: .28em;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(48px, 8vw, 100px);
+      line-height: .95;
+      font-weight: 500;
+      letter-spacing: -.05em;
+      margin-bottom: 28px;
+    }
+
+    h1 em {
+      color: var(--red);
+      font-style: normal;
+    }
+
+    .hero-desc {
+      max-width: 490px;
+      color: #b8b4b2;
+      line-height: 1.9;
+      font-size: 15px;
+      margin-bottom: 38px;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      border: 0;
+      cursor: pointer;
+      transition: .25s ease;
+      font-size: 13px;
+      letter-spacing: .15em;
+    }
+
+    .primary-btn {
+      padding: 17px 32px;
+      color: white;
+      background: var(--red);
+      box-shadow: 0 8px 30px rgba(215, 25, 56, .25);
+    }
+
+    .primary-btn:hover {
+      background: var(--red-light);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(215, 25, 56, .4);
+    }
+
+    .secondary-btn {
+      padding: 15px 25px;
+      color: #ddd;
+      background: transparent;
+      border: 1px solid var(--line);
+    }
+
+    .secondary-btn:hover {
+      border-color: var(--red);
+      color: white;
+    }
+
+    .survival-card {
+      min-height: 390px;
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, rgba(35, 13, 16, .9), rgba(8, 8, 9, .96)),
+        repeating-linear-gradient(135deg, transparent 0 12px, rgba(255,255,255,.03) 13px);
+      border: 1px solid rgba(255, 255, 255, .15);
+      box-shadow: 25px 25px 0 rgba(97, 11, 24, .15);
+    }
+
+    .survival-card::before {
+      content: "X";
+      position: absolute;
+      right: 28px;
+      top: 8px;
+      color: rgba(215, 25, 56, .18);
+      font-size: 210px;
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    .card-label {
+      color: var(--red-light);
+      font-size: 11px;
+      letter-spacing: .25em;
+      margin-bottom: 90px;
+    }
+
+    .card-title {
+      font-family: Georgia, serif;
+      font-size: 44px;
+      margin-bottom: 15px;
+    }
+
+    .card-line {
+      width: 75px;
+      height: 2px;
+      background: var(--red);
+      margin-bottom: 18px;
+    }
+
+    .card-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    /* 测试页 */
+    .quiz-wrap {
+      width: min(760px, 100%);
+    }
+
+    .quiz-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .quiz-number {
+      color: var(--red-light);
+      font-size: 13px;
+      letter-spacing: .18em;
+    }
+
+    .quiz-progress {
+      width: 180px;
+      height: 3px;
+      background: rgba(255,255,255,.12);
+    }
+
+    .quiz-progress span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: var(--red);
+      transition: width .3s ease;
+    }
+
+    .question-card {
+      padding: clamp(27px, 6vw, 55px);
+      background: var(--card);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .question-card h2 {
+      font-family: Georgia, "Microsoft YaHei", serif;
+      font-size: clamp(25px, 4vw, 39px);
+      font-weight: 500;
+      line-height: 1.35;
+      margin-bottom: 12px;
+    }
+
+    .question-card .sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 35px;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option {
+      position: relative;
+      padding: 18px 20px 18px 52px;
+      color: #d7d4d2;
+      text-align: left;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.1);
+      cursor: pointer;
+      transition: .22s ease;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .option::before {
+      content: "";
+      position: absolute;
+      left: 19px;
+      top: 50%;
+      width: 17px;
+      height: 17px;
+      border: 1px solid #777;
+      transform: translateY(-50%) rotate(45deg);
+      transition: .22s ease;
+    }
+
+    .option:hover {
+      border-color: var(--red);
+      background: rgba(215,25,56,.1);
+    }
+
+    .option.selected {
+      color: white;
+      border-color: var(--red);
+      background: rgba(215,25,56,.16);
+    }
+
+    .option.selected::before {
+      border-color: var(--red-light);
+      background: var(--red);
+      box-shadow: 0 0 15px rgba(215,25,56,.55);
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+    }
+
+    .hint {
+      color: #777;
+      font-size: 12px;
+    }
+
+    #nextBtn:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* 结果页 */
+    .result-wrap {
+      width: min(900px, 100%);
+      text-align: center;
+    }
+
+    .result-kicker {
+      color: var(--red-light);
+      letter-spacing: .28em;
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    .result-wrap h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(48px, 8vw, 88px);
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: 18px;
+    }
+
+    .result-desc {
+      max-width: 600px;
+      margin: 0 auto 38px;
+      color: #bcb8b5;
+      line-height: 1.9;
+      font-size: 15px;
+    }
+
+    .result-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      text-align: left;
+      margin-bottom: 30px;
+    }
+
+    .result-box {
+      padding: 25px;
+      min-height: 150px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid var(--line);
+    }
+
+    .result-box h3 {
+      color: var(--red-light);
+      font-size: 12px;
+      letter-spacing: .18em;
+      margin-bottom: 18px;
+    }
+
+    .result-box p {
+      color: #d0ccca;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 12px 0;
+      color: #bbb;
+      font-size: 12px;
+    }
+
+    .score-name {
+      width: 80px;
+    }
+
+    .bar {
+      flex: 1;
+      height: 5px;
+      background: #29292b;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: var(--red);
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 28px, 560px);
+      }
+
+      header {
+        height: 75px;
+      }
+
+      .status {
+        font-size: 9px;
+      }
+
+      .screen {
+        min-height: calc(100vh - 75px);
+        padding: 45px 0;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 45px;
+      }
+
+      h1 {
+        font-size: clamp(54px, 17vw, 82px);
+      }
+
+      .survival-card {
+        min-height: 280px;
+        padding: 25px;
+      }
+
+      .card-label {
+        margin-bottom: 55px;
+      }
+
+      .card-title {
+        font-size: 36px;
+      }
+
+      .quiz-progress {
+        width: 120px;
+      }
+
+      .question-card {
+        padding: 27px 20px;
+      }
+
+      .option {
+        padding-right: 14px;
+      }
+
+      .quiz-actions {
+        align-items: flex-end;
+      }
+
+      .hint {
+        max-width: 145px;
+        line-height: 1.5;
+      }
+
+      .result-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .result-wrap h2 {
+        font-size: 56px;
+      }
+
+      .result-actions {
+        flex-direction: column;
+      }
+
+      .result-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="brand-mark"><span>✦</span></div>
+        LAST DAWN / 07
+      </div>
+      <div class="status">SURVIVAL PROTOCOL ONLINE</div>
+    </header>
+
+    <!-- 开始页 -->
+    <section id="intro" class="screen active">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">THE WORLD HAS ENDED</div>
+          <h1>你将在<br><em>末日里</em><br>如何生存？</h1>
+          <p class="hero-desc">
+            城市失去秩序，资源正在枯竭，旧世界只剩最后一点余温。
+            你的每一次选择，都将决定你会成为怎样的幸存者。
+          </p>
+          <button class="primary-btn" id="startBtn">启动生存测试　→</button>
+        </div>
+
+        <div class="survival-card">
+          <div class="card-label">CLASSIFIED / HUMAN SURVIVAL FILE</div>
+          <div class="card-title">07:13:59</div>
+          <div class="card-line"></div>
+          <div class="card-note">
+            末日爆发后第 73 天。<br>
+            还有 4 种生存方式等待确认。<br><br>
+            你准备好面对真正的自己了吗？
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 测试页 -->
+    <section id="quiz" class="screen">
+      <div class="quiz-wrap">
+        <div class="quiz-top">
+          <div class="quiz-number">
+            SCENARIO <span id="currentNum">01</span> / 07
+          </div>
+          <div class="quiz-progress">
+            <span id="progressBar"></span>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <h2 id="questionText"></h2>
+          <p class="sub" id="questionSub"></p>
+          <div class="options" id="options"></div>
+
+          <div class="quiz-actions">
+            <div class="hint">选择最接近你本能反应的答案</div>
+            <button class="primary-btn" id="nextBtn" disabled>确认选择　→</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 结果页 -->
+    <section id="result" class="screen">
+      <div class="result-wrap">
+        <div class="result-kicker">YOUR SURVIVAL ARCHETYPE IS</div>
+        <h2 id="resultTitle"></h2>
+        <p class="result-desc" id="resultDesc"></p>
+
+        <div class="result-panel">
+          <div class="result-box">
+            <h3>生存档案</h3>
+            <p id="resultProfile"></p>
+          </div>
+
+          <div class="result-box">
+            <h3>能力构成</h3>
+            <div id="scoreList"></div>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button class="primary-btn" id="restartBtn">重新测试　↻</button>
+          <button class="secondary-btn" id="shareBtn">复制结果</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        text: "警报响起，城市电网全部中断。你首先会做什么？",
+        sub: "灾难刚刚开始，时间比资源更加稀缺。",
+        options: [
+          ["寻找武器和弹药，确认周围是否安全", "hunter"],
+          ["召集身边的人，建立临时指挥点", "leader"],
+          ["背上必要物资，立即离开城市", "wanderer"],
+          ["检查发电机、通讯设备和水源", "builder"]
+        ]
+      },
+      {
+        text: "你发现一座无人超市，里面还有少量食物。",
+        sub: "货架上的物资足够三个人使用五天。",
+        options: [
+          ["拿走所有能带走的物资，不留下痕迹", "hunter"],
+          ["只拿一部分，并给后来者留下路线标记", "leader"],
+          ["只拿轻便高热量的食物，继续赶路", "wanderer"],
+          ["寻找仓库和冷藏设备，尝试长期保存", "builder"]
+        ]
+      },
+      {
+        text: "一个陌生人请求加入你的队伍，但他受了伤。",
+        sub: "你无法判断他是否携带危险。",
+        options: [
+          ["保持距离，先观察他是否具有威胁", "hunter"],
+          ["接纳他，并让队伍共同决定", "leader"],
+          ["给他少量物资，然后独自离开", "wanderer"],
+          ["先处理伤口，确认他能否恢复行动", "builder"]
+        ]
+      },
+      {
+        text: "夜里，你听见避难所外有东西在移动。",
+        sub: "所有人都在等待你的判断。",
+        options: [
+          ["关闭灯光，带上武器，悄悄侦查", "hunter"],
+          ["让所有人保持冷静，安排防守位置", "leader"],
+          ["趁混乱从后门离开，避免正面冲突", "wanderer"],
+          ["检查门锁、电路和警报系统", "builder"]
+        ]
+      },
+      {
+        text: "你得到一张地图，标注着四个可能的安全区。",
+        sub: "其中只有一个地点仍然有信号。",
+        options: [
+          ["选择最隐蔽、最难被发现的地点", "hunter"],
+          ["选择人口最多、最可能形成社区的地点", "leader"],
+          ["选择距离最远、最少有人经过的地点", "wanderer"],
+          ["选择有水源、工厂或可修复设施的地点", "builder"]
+        ]
+      },
+      {
+        text: "队伍内部因为资源分配发生争吵。",
+        sub: "如果无法达成一致，队伍可能会分裂。",
+        options: [
+          ["拿走属于自己的那份，不参与争论", "wanderer"],
+          ["明确规则，让每个人按照贡献获得资源", "leader"],
+          ["检查资源清单，寻找浪费和隐藏库存", "builder"],
+          ["观察每个人的真实意图，找出最危险的人", "hunter"]
+        ]
+      },
+      {
+        text: "你只能带走一样东西前往未知区域。",
+        sub: "这是一次没有返回路线的选择。",
+        options: [
+          ["一把可靠的武器", "hunter"],
+          ["一份完整的人员与资源名单", "leader"],
+          ["一只装满水和食物的背包", "wanderer"],
+          ["一套工具和能够修复设备的零件", "builder"]
+        ]
+      }
+    ];
+
+    const resultData = {
+      hunter: {
+        title: "独行猎手",
+        desc: "你相信直觉、速度与警觉性。在失去秩序的世界里，你不依赖任何人，也很少给危险第二次机会。",
+        profile: "你擅长在混乱中寻找生路，能够快速识别风险并做出决断。你可能不是最容易接近的人，但往往是最难被淘汰的人。",
+        name: "猎手"
+      },
+      leader: {
+        title: "避难所领袖",
+        desc: "你知道真正的生存从来不是一个人的胜利。你愿意承担责任，也愿意让别人相信明天仍然存在。",
+        profile: "你拥有组织、安抚和凝聚人心的能力。你的最大武器不是力量，而是让一群陌生人在末日中继续保持秩序。",
+        name: "领袖"
+      },
+      wanderer: {
+        title: "荒野游牧者",
+        desc: "你不属于任何一座城市，也不相信任何一堵墙。对你而言，活下去就是永远保持移动。",
+        profile: "你适应环境的能力极强，擅长轻装行动和独立决策。你拒绝被固定规则束缚，未知反而让你感到自由。",
+        name: "游牧者"
+      },
+      builder: {
+        title: "废土重建者",
+        desc: "你看见的不是废墟，而是尚未被重新启动的系统。只要还有工具、材料和一点时间，就有机会重建文明。",
+        profile: "你擅长解决实际问题，能够把有限资源转化为长期优势。相比逃离末日，你更愿意让世界重新运转。",
+        name: "重建者"
+      }
+    };
+
+    let currentQuestion = 0;
+    let selectedType = null;
+    let scores = {
+      hunter: 0,
+      leader: 0,
+      wanderer: 0,
+      builder: 0
+    };
+
+    const intro = document.getElementById("intro");
+    const quiz = document.getElementById("quiz");
+    const result = document.getElementById("result");
+    const startBtn = document.getElementById("startBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const shareBtn = document.getElementById("shareBtn");
+
+    function showScreen(screen) {
+      [intro, quiz, result].forEach(item => item.classList.remove("active"));
+      screen.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestion];
+
+      document.getElementById("currentNum").textContent =
+        String(currentQuestion + 1).padStart(2, "0");
+
+      document.getElementById("questionText").textContent = question.text;
+      document.getElementById("questionSub").textContent = question.sub;
+      document.getElementById("progressBar").style.width =
+        `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+      const optionsBox = document.getElementById("options");
+      optionsBox.innerHTML = "";
+      selectedType = null;
+      nextBtn.disabled = true;
+
+      question.options.forEach(([text, type]) => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.textContent = text;
+
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".option").forEach(item => {
+            item.classList.remove("selected");
+          });
+
+          button.classList.add("selected");
+          selectedType = type;
+          nextBtn.disabled = false;
+        });
+
+        optionsBox.appendChild(button);
+      });
+    }
+
+    function showResult() {
+      const winner = Object.keys(scores).sort((a, b) => scores[b] - scores[a])[0];
+      const data = resultData[winner];
+
+      document.getElementById("resultTitle").textContent = data.title;
+      document.getElementById("resultDesc").textContent = data.desc;
+      document.getElementById("resultProfile").textContent = data.profile;
+
+      const scoreList = document.getElementById("scoreList");
+      scoreList.innerHTML = "";
+
+      const labels = {
+        hunter: "猎手本能",
+        leader: "领袖意志",
+        wanderer: "游牧适应",
+        builder: "重建能力"
+      };
+
+      Object.keys(scores).forEach(type => {
+        const row = document.createElement("div");
+        row.className = "score-row";
+
+        const percentage = Math.round((scores[type] / questions.length) * 100);
+
+        row.innerHTML = `
+          <span class="score-name">${labels[type]}</span>
+          <div class="bar"><span style="width:${percentage}%"></span></div>
+          <span>${percentage}%</span>
+        `;
+
+        scoreList.appendChild(row);
+      });
+
+      showScreen(result);
+    }
+
+    startBtn.addEventListener("click", () => {
+      currentQuestion = 0;
+      scores = {
+        hunter: 0,
+        leader: 0,
+        wanderer: 0,
+        builder: 0
+      };
+
+      showScreen(quiz);
+      renderQuestion();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (!selectedType) return;
+
+      scores[selectedType]++;
+
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    });
+
+    restartBtn.addEventListener("click", () => {
+      currentQuestion = 0;
+      scores = {
+        hunter: 0,
+        leader: 0,
+        wanderer: 0,
+        builder: 0
+      };
+
+      showScreen(intro);
+    });
+
+    shareBtn.addEventListener("click", async () => {
+      const title = document.getElementById("resultTitle").textContent;
+      const text = `我的末日生存类型是：${title}｜末日生存协议`;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        shareBtn.textContent = "已复制结果 ✓";
+        setTimeout(() => {
+          shareBtn.textContent = "复制结果";
+        }, 1800);
+      } catch {
+        alert(text);
+      }
+    });
+  </script>
+</body>
+</html>
